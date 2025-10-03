@@ -10,11 +10,11 @@ trait HandlesFieldSchema
     private Schema $schema;
 
     public function name() : string {
-        return $this->schema->name ?? '';
+        return $this->schema->name;
     }
 
     public function withName(string $name) : self {
-        $this->schema->name = $name;
+        $this->schema = $this->schema->withName($name);
         // TODO: revise this
         if ($this->isStructure()) {
             $this->get()?->withName($name);
@@ -23,11 +23,11 @@ trait HandlesFieldSchema
     }
 
     public function description() : string {
-        return $this->schema->description ?? '';
+        return $this->schema->description;
     }
 
     public function withDescription(string $description) : self {
-        $this->schema->description = $description;
+        $this->schema = $this->schema->withDescription($description);
         // TODO: revise this
         if ($this->isStructure()) {
             $this->get()->withDescription($description);
@@ -51,6 +51,10 @@ trait HandlesFieldSchema
     }
 
     public function nestedType() : TypeDetails {
-        return $this->schema->typeDetails->nestedType;
+        $nestedType = $this->schema->typeDetails->nestedType;
+        if ($nestedType === null) {
+            throw new \Exception('Field does not have a nested type');
+        }
+        return $nestedType;
     }
 }

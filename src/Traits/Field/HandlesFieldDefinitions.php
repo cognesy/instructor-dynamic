@@ -25,6 +25,9 @@ trait HandlesFieldDefinitions
         return new Field($name, $description, TypeDetails::bool());
     }
 
+    /**
+     * @param class-string $enumClass
+     */
     static public function enum(string $name, string $enumClass, string $description = '') : self {
         return new Field($name, $description, TypeDetails::enum($enumClass));
     }
@@ -33,6 +36,9 @@ trait HandlesFieldDefinitions
         return new Field($name, $description, TypeDetails::option($values));
     }
 
+    /**
+     * @param class-string $class
+     */
     static public function object(string $name, string $class, string $description = '') : self {
         return new Field($name, $description, TypeDetails::object($class));
     }
@@ -41,6 +47,9 @@ trait HandlesFieldDefinitions
         return new Field($name, $description, TypeDetails::object(DateTime::class));
     }
 
+    /**
+     * @param array<Field>|callable(Structure): array<Field> $fields
+     */
     static public function structure(string $name, array|callable $fields, string $description = '') : self {
         $structure = Structure::define($name, $fields, $description);
         $result = new Field($name, $description, TypeDetails::object(Structure::class));
@@ -56,11 +65,11 @@ trait HandlesFieldDefinitions
                 description: $description,
                 typeDetails: TypeDetails::collection($itemType)
             ),
-            is_object($itemType) && $itemType instanceof TypeDetails => (new Field(
+            $itemType instanceof TypeDetails => (new Field(
                 name: $name,
                 description: $description,
                 typeDetails: TypeDetails::collection($itemType->toString())))->set($itemType),
-            is_object($itemType) && $itemType instanceof Structure => (new Field(
+            $itemType instanceof Structure => (new Field(
                 name: $name,
                 description: $description,
                 typeDetails: TypeDetails::collection(Structure::class),

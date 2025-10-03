@@ -4,6 +4,7 @@ namespace Cognesy\Dynamic;
 
 use Closure;
 use Cognesy\Schema\Data\Schema\Schema;
+use Cognesy\Schema\Data\Schema\ObjectSchema;
 use Cognesy\Schema\Data\TypeDetails;
 use Cognesy\Schema\Factories\JsonSchemaToSchema;
 use Cognesy\Schema\Reflection\ClassInfo;
@@ -34,6 +35,10 @@ class StructureFactory
         return self::makeFromFunctionInfo(FunctionInfo::fromMethodName($class, $method), $name, $description);
     }
 
+    /**
+     * @param callable $callable
+     * @phpstan-ignore-next-line
+     */
     static public function fromCallable(callable $callable, ?string $name = null, ?string $description = null) : Structure {
         $closure = match(true) {
             $callable instanceof Closure => $callable,
@@ -154,10 +159,11 @@ class StructureFactory
 
     static private function makeSchemaFields(Schema $schema) : array {
         $fields = [];
+        $required = ($schema instanceof ObjectSchema) ? $schema->required : [];
         foreach ($schema->getPropertySchemas() as $propertyName => $propertySchema) {
             $typeDetails = $propertySchema->typeDetails();
             $field = FieldFactory::fromTypeDetails($propertyName, $typeDetails, $propertySchema->description());
-            $isRequired = in_array($propertyName, $schema->required, true);
+            $isRequired = in_array($propertyName, $required, true);
             $fields[] = match (true) {
                 $isRequired => $field->required(),
                 default => $field->optional(),
