@@ -1,3 +1,9 @@
+---
+title: Dynamic
+description: Runtime data structures — schema-driven immutable objects with validation
+package: dynamic
+---
+
 # Dynamic Cheat Sheet
 
 ## Mental Model
@@ -48,12 +54,15 @@ Mutate (immutable):
 
 - `withData(array $data): Structure`
 - `set(string $name, mixed $value): Structure`
+- `clone(): Structure`
 - `fromArray(array $data): static`
 
 Validation / transform:
 
 - `validate(): ValidationResult`
+- `normalizeRecord(array $values): array`
 - `transform(): mixed`
+- `withValidation(callable $validator): Structure` — compatibility no-op, returns `$this`
 
 ## StructureFactory API
 
